@@ -1,94 +1,58 @@
-import React from "react"
-import { useState } from "react"
+import React, { useState } from "react";
 
 const MOVES = {
   rock: "🪨",
-  paper: "📃",
+  paper: "📄",
   scissors: "✂️"
-}
-const KEYS = Object.keys(MOVES)
+};
 
-const App = () => {
-  const [userMove, setUserMove] = useState(null)
-  const [computerMove, setComputerMove] = useState(null)
-  const [result, setResult] = useState("")
-  const [score, setScore] = useState({ user: 0, computer: 0, ties: 0 })
+const KEYS = Object.keys(MOVES);
 
-  function handleClick(move) {
-    const comp = KEYS[Math.floor(Math.randomandom() * KEYS.length)]
-    setUserMove(move)
-    setComputerMove(comp)
+function App() {
+  const [userMove, setUserMove] = useState(null);
+  const [computerMove, setComputerMove] = useState(null);
+  const [result, setResult] = useState("");
 
-    if (move === comp) {
-      setResult("Tie")
-      setScore((s) => ({ ...s, ties: s.ties + 1 }))
-      return
-    }
-
-    const wins =
-      (move === "rock" && comp === "scissors") ||
-      (move === "scissors" && comp === "paper") ||
-      (move === "paper" && comp === "rock")
-
-    if (wins) {
-      setResult("You win 🎉")
-      setScore((s) => ({ ...s, user: s.user + 1 }))
-    } else {
-      setResult("Computer wins 💻")
-      setScore((s) => ({ ...s, computer: s.computer + 1 }))
-    }
+  function getComputerMove() {
+    return KEYS[Math.floor(Math.random() * KEYS.length)];
   }
 
-  function reset() {
-    setUserMove(null)
-    setComputerMove(null)
-    setResult("")
-    setScore({ user: 0, computer: 0, ties: 0 })
+  function getResult(user, comp) {
+    if (user === comp) return "Draw";
+
+    if (
+      (user === "rock" && comp === "scissors") ||
+      (user === "paper" && comp === "rock") ||
+      (user === "scissors" && comp === "paper")
+    ) {
+      return "You Win 🎉";
+    }
+
+    return "You Lose 😢";
+  }
+
+  function play(move) {
+    const compMove = getComputerMove();
+    setUserMove(move);
+    setComputerMove(compMove);
+    setResult(getResult(move, compMove));
   }
 
   return (
-    <div className="app-card">
-      <h1>Stone Paper Scissor Game</h1>
+    <div style={{ textAlign: "center" }}>
+      <h1>Rock Paper Scissors</h1>
 
-      <div className="players">
-        <div className="player">
-          <div className="label-muted">Computer</div>
-          <div className="move-emoji">{computerMove ? MOVES[computerMove] : "?"}</div>
-        </div>
-
-        <div className="player">
-          <div className="label-muted">You</div>
-          <div className="move-emoji">{userMove ? MOVES[userMove] : "?"}</div>
-        </div>
-      </div>
-
-      <div className="buttons-row">
-        {KEYS.map((k) => (
-          <button
-            key={k}
-            onClick={() => handleClick(k)}
-            className={`move-btn ${userMove === k ? "active" : ""}`}
-            aria-label={k}
-          >
-            {MOVES[k]}
-          </button>
-        ))}
-      </div>
-
-      <div className="result">{result}</div>
-
-      <div className="stats">
-        <div>Wins: {score.user}</div>
-        <div>Losses: {score.computer}</div>
-        <div>Ties: {score.ties}</div>
-      </div>
-
-      <div style={{ marginTop: 8 }}>
-        <button onClick={reset} className="reset-btn">
-          Reset
+      {KEYS.map((move) => (
+        <button key={move} onClick={() => play(move)}>
+          {MOVES[move]}
         </button>
-      </div>
+      ))}
+
+      <h2>You: {userMove && MOVES[userMove]}</h2>
+      <h2>Computer: {computerMove && MOVES[computerMove]}</h2>
+      <h2>{result}</h2>
     </div>
-  )
+  );
 }
-export default App
+
+export default App;
